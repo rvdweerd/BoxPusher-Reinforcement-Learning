@@ -4,7 +4,7 @@
 int main()
 {
 	using ULL = unsigned long long;
-	Maze maze("maze1.txt");
+	Maze maze("maze2.txt");
 	//std::cout << "Reachable Pusher Neighbors:\n";
 	//maze.PrintPositionsOnMaze(maze.GetAccessibleNeighbors(maze.GetPBPos_0(),maze.GetPusherPos_0()));
 	//std::cout << "All Reachable Pusher Positions:\n";
@@ -30,8 +30,12 @@ int main()
 
 	std::cout<< "Minimum number of box pushes to goal: ";
 	PBData endstate = maze.NumberOfPushesToGoal();
-	std::cout << endstate.n <<'\n';
-	std::cout << "Press [Enter] to show shortest path...";
+	if (endstate.n == -1) std::cout << "[No solution]";
+	else
+	{
+		std::cout << endstate.n << '\n';
+		std::cout << "Press [Enter] to show shortest path...";
+	}
 	std::cin.get();
 	system("cls");
 
@@ -41,7 +45,6 @@ int main()
 		std::cin.get();
 		system("cls");
 	}
-	std::cout << endstate.n << '\n';
 
 	std::cin.get();
 }

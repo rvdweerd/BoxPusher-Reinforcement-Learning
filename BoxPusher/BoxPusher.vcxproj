@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="maze1.txt" />
+    <Text Include="maze2.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Maze.h" />

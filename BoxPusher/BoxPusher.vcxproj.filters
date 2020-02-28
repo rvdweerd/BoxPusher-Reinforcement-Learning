@@ -18,6 +18,9 @@
     <Text Include="maze1.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="maze2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Maze.h">

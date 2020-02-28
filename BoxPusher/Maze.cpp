@@ -218,6 +218,6 @@ PBData Maze::NumberOfPushesToGoal()
 			}
 		}
 	}
-	return { PBPos_0,std::numeric_limits<unsigned>::max(),{} };
+	return { PBPos_0,-1,{} };
 }
 

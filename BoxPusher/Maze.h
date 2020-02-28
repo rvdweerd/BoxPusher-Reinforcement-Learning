@@ -8,7 +8,7 @@ struct PBData
 {
 	using ULL = unsigned long long;
 	ULL PBPos;
-	size_t n = 0;
+	int n = 0;
 	std::vector<ULL> path;
 };
 struct Field
