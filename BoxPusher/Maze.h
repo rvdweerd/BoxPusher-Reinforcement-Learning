@@ -4,7 +4,13 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
-
+struct PBData
+{
+	using ULL = unsigned long long;
+	ULL PBPos;
+	size_t n = 0;
+	std::vector<ULL> path;
+};
 struct Field
 {
 	Field(std::string filename)
@@ -59,7 +65,7 @@ public:
 	{
 		return PBPos_0;
 	}
-	size_t NumberOfPushesToGoal();
+	PBData NumberOfPushesToGoal();
 private:
 	Field field;
 	size_t ballPos_0;

@@ -2,9 +2,20 @@
 #include <set>
 #include <queue>
 #include <algorithm>
+#include <limits>
 using ULL = unsigned long long;
 auto Pos2PBPos = [](size_t pusherPos_0, size_t ballPos_0)->ULL { return (ULL(pusherPos_0) << 32 | ballPos_0); };
-
+namespace std
+{
+	template <> struct hash<PBData>
+	{
+		size_t operator()(const PBData& pbdata)
+		{
+			std::hash<ULL> hasher;
+			return hasher(pbdata.PBPos);
+		}
+	};
+}
 Maze::Maze(std::string filename)
 	:
 	field(filename),
@@ -108,7 +119,10 @@ std::vector<size_t> Maze::GetAccessibleNeighbors(ULL PBPos, size_t pos)
 	size_t x = pos % field.width;
 	size_t y = pos / field.width;
 	std::vector<size_t> returnvec;
-	auto CanStand = [this,&pusherPos](size_t p)->bool {return (field.vec[p] == '.' || p == pusherPos); };
+	auto CanStand = [&](size_t p)->bool 
+	{
+		return ( (field.vec[p] == '.' || p == pusherPos) && p != ballPos  ); 
+	};
 	// North
 	if (y != 0 && CanStand(pos - field.width)) returnvec.push_back(pos - field.width);
 	// East
@@ -180,24 +194,30 @@ void Maze::PrintPBPosOnMaze(ULL PBPos)
 		std::cout << '\n';
 	}
 }
-size_t Maze::NumberOfPushesToGoal()
+PBData Maze::NumberOfPushesToGoal()
 {
 	std::set<ULL> visited; visited.insert(PBPos_0);
-	std::queue<ULL> queue; queue.push(PBPos_0);
+	std::queue<PBData> queue; queue.push({ PBPos_0 });
 	while (!queue.empty())
 	{
-		ULL curpos = queue.front(); queue.pop();
-		for (ULL pbpos : GetNewPBPositions(curpos))
+		PBData cur_pbdata = queue.front(); queue.pop();
+		for (ULL pbpos : GetNewPBPositions(cur_pbdata.PBPos))
 		{
 			if (visited.find(pbpos) == visited.end())
 			{
-				if (size_t((pbpos << 32) >> 32) == goalPos) return 1;
-				queue.push(pbpos);
+				PBData new_pbdata = cur_pbdata;
+				new_pbdata.n++;
+				new_pbdata.path.push_back(pbpos);
+				new_pbdata.PBPos = pbpos;
+				if (size_t((pbpos << 32) >> 32) == goalPos)
+				{
+					return new_pbdata;
+				}
+				queue.push(new_pbdata);
 				visited.insert(pbpos);
-				PrintPBPosOnMaze(pbpos);
 			}
 		}
 	}
-	return 0;
+	return { PBPos_0,std::numeric_limits<unsigned>::max(),{} };
 }
 
