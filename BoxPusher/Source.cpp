@@ -8,6 +8,8 @@
 #include <queue>
 #include <algorithm>
 #include <limits>
+#include "RLutils.h"
+
 using ULL = unsigned long long;
 auto Pos2PBPos = [](size_t pusherPos_0, size_t ballPos_0)->ULL { return (ULL(pusherPos_0) << 32 | ballPos_0); };
 struct PBData
@@ -17,6 +19,7 @@ struct PBData
 	int n = 0;
 	std::vector<ULL> path;
 };
+
 struct Field
 {
 	Field(std::string filename)
@@ -71,6 +74,7 @@ struct Field
 	std::unordered_map<size_t, char> map;
 	std::unordered_map<char, size_t> startpositions;
 };
+
 class Maze
 {
 public:
@@ -92,6 +96,10 @@ public:
 	{
 		PBPos_0 = Pos2PBPos(pusherPos_0, ballPos_0);
 		
+	}
+	void Step(int a) {
+		auto n = GetAccessibleNeighbors(PBPos_0, 22);
+		return;
 	}
 	std::vector<size_t> GetReachablePushPositions(ULL PBPos)
 	{
@@ -312,40 +320,39 @@ public:
 		return endstate.n;
 	}
 };
-int main()
-{
-	//Maze maze("maze2.txt");
-	std::vector<std::vector<char>> grid1 = 
-	{ 
+void SearchAlgo() {
+	std::vector<std::vector<char>> grid1 =
+	{
 		{'#', '#', '#', '#', '#', '#'},
 		{'#', 'T', '#', '#', '#', '#'},
 		{'#', '.', '.', 'B', '.', '#'},
 		{'#', '.', '#', '#', '.', '#'},
 		{'#', '.', '.', '.', 'S', '#'},
 		{'#', '#', '#', '#', '#', '#'} };
-	
+
 	std::vector<std::vector<char>> grid2 =
-		{{'#', '#', '#', '#', '#', '#'},
-		{'#', 'T', '#', '#', '#', '#'},
-		{'#', '.', '.', 'B', '.', '#'},
-		{'#', '#', '#', '#', '.', '#'},
-		{'#', '.', '.', '.', 'S', '#'},
-		{'#', '#', '#', '#', '#', '#'}};
+	{ {'#', '#', '#', '#', '#', '#'},
+	{'#', 'T', '#', '#', '#', '#'},
+	{'#', '.', '.', 'B', '.', '#'},
+	{'#', '#', '#', '#', '.', '#'},
+	{'#', '.', '.', '.', 'S', '#'},
+	{'#', '#', '#', '#', '#', '#'} };
 
 	std::vector<std::vector<char>> grid3 =
-		{{'#', '#', '#', '#', '#', '#'},
-		{'#', 'T', '.', '.', '#', '#'},
-		{'#', '.', '#', 'B', '.', '#'},
-		{'#', '.', '.', '.', '.', '#'},
-		{'#', '.', '.', '.', 'S', '#'},
-		{'#', '#', '#', '#', '#', '#'}};
+	{ {'#', '#', '#', '#', '#', '#'},
+	{'#', 'T', '.', '.', '#', '#'},
+	{'#', '.', '#', 'B', '.', '#'},
+	{'#', '.', '.', '.', '.', '#'},
+	{'#', '.', '.', '.', 'S', '#'},
+	{'#', '#', '#', '#', '#', '#'} };
 
 	std::vector<std::vector<char>> grid4 =
-		{{'#', '#', '#', '#', '#', '#', '#'},
-		{'#', 'S', '#', '.', 'B', 'T', '#'},
-		{'#', '#', '#', '#', '#', '#', '#'}};
-	
-	Maze maze(grid4);
+	{ {'#', '#', '#', '#', '#', '#', '#'},
+	{'#', 'S', '#', '.', 'B', 'T', '#'},
+	{'#', '#', '#', '#', '#', '#', '#'} };
+
+	Maze maze("maze2.txt");
+	//Maze maze(grid1);
 	maze.PrintPBPosOnMaze(maze.GetPBPos_0());
 
 
@@ -372,7 +379,7 @@ int main()
 	std::cout << "O = Box Position\n";
 	std::cout << "X = Target box position\n\n";
 
-	std::cout<< "Minimum number of box pushes to goal: ";
+	std::cout << "Minimum number of box pushes to goal: ";
 	PBData endstate = maze.NumberOfPushesToGoal();
 	if (endstate.n == -1) std::cout << "[No solution]";
 	else
@@ -391,4 +398,23 @@ int main()
 	}
 
 	std::cin.get();
+
+}
+void RLrun() {
+	std::vector<std::vector<char>> grid1 =
+	{
+		{'#', '#', '#', '#', '#', '#'},
+		{'#', 'T', '#', '#', '#', '#'},
+		{'#', '.', '.', 'B', '.', '#'},
+		{'#', '.', '#', '#', '.', '#'},
+		{'#', '.', '.', '.', 'S', '#'},
+		{'#', '#', '#', '#', '#', '#'} };
+	RL::RLField rlField(grid1);
+	RL::RL_solve(rlField);
+}
+
+int main()
+{
+	RLrun();
+	SearchAlgo();
 }

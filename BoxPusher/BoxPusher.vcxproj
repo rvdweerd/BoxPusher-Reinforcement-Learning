@@ -142,11 +142,10 @@
     <Text Include="maze2.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Maze.h" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Maze.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClInclude Include="RLutils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
