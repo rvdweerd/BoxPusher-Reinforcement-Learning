@@ -113,6 +113,7 @@ namespace RL {
 		{
 			ULL PusherBoxPositions = 0; // Unique state (bits 1-16: Pusher cell number, bits 17-32 Box cell number)
 			size_t n = 0;				// Step counter in episode
+			int boxMoves = 0;			// Number of boxMoves in episode
 			std::vector<ULL> path;		// Path history of states
 			float reward = 0;			// Reward received after step
 			bool done = false;			// True if terminal state is reached
@@ -148,7 +149,7 @@ namespace RL {
 					fieldMap.insert({ y * width + x, ch });
 				}
 			}
-			fieldState = { Pos2PBPos({startPosPusher,startPosBall}), 0, {}, false };
+			fieldState = { Pos2PBPos({startPosPusher,startPosBall}), 0, 0, {}, false };
 			fieldState_0 = fieldState;
 			fieldState.path.push_back(fieldState.PusherBoxPositions);
 
@@ -206,12 +207,14 @@ namespace RL {
 			fieldState.reward = -1.;
 			if (a == 0) { // Stepping north
 				//std::cout << "N: ";
-				if (pbPositions.first <= width || fieldMap[pbPositions.first - width] == '#') { // blocked or end of field
+				if (pbPositions.first < width || fieldMap[pbPositions.first - width] == '#') { // blocked or end of field
 					//std::cout << "Bumped into wall going North\n";
 				}
 				else if (pbPositions.second == pbPositions.first - width) { // box north of player
 					if (pbPositions.first >= 2 * width && fieldMap[(pbPositions.first - 2 * width)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first - width, pbPositions.second - width });
+						fieldState.boxMoves++;
+						fieldState.reward -= 5;
 						//std::cout << "Pushed box North\n";
 					}
 					else { // no room to push
@@ -229,8 +232,10 @@ namespace RL {
 					//std::cout << "Bumped into wall going East\n";
 				}
 				else if (pbPositions.second == pbPositions.first + 1) { // box east of player
-					if ((pbPositions.first + 1) % width > 1 && fieldMap[(pbPositions.first + 2)] != '#') { // room to push
+					if ((pbPositions.second + 1) % width > 0 && fieldMap[(pbPositions.first + 2)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first + 1, pbPositions.second + 1 });
+						fieldState.boxMoves++;
+						fieldState.reward -= 5;
 						//std::cout << "Pushed box East\n";
 					}
 					else { // no room to push
@@ -250,6 +255,8 @@ namespace RL {
 				else if (pbPositions.second == pbPositions.first + width) { // box South of player
 					if ((pbPositions.first / width) + 1 < height - 1 && fieldMap[(pbPositions.first + 2 * width)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first + width, pbPositions.second + width });
+						fieldState.boxMoves++;
+						fieldState.reward -= 5;
 						//std::cout << "Pushed box South\n";
 					}
 					else { // no room to push
@@ -267,8 +274,10 @@ namespace RL {
 					//std::cout << "Bumped into wall going West\n";
 				}
 				else if (pbPositions.second == pbPositions.first - 1) { // box West of player
-					if ((pbPositions.first + 1) % width > 2 && fieldMap[(pbPositions.first - 2)] != '#') { // room to push
+					if ((pbPositions.first) % width > 1 && fieldMap[(pbPositions.first - 2)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first - 1, pbPositions.second - 1 });
+						fieldState.boxMoves++;
+						fieldState.reward -= 5;
 						//std::cout << "Pushed box West\n";
 					}
 					else { // no room to push
@@ -283,6 +292,7 @@ namespace RL {
 			// Check terminal conditions
 			if (fieldState.n > size * 3) { // Episode time limit (assuming this is because of deadlock)
 				fieldState.done = true;
+				fieldState.boxMoves = -1;
 			}
 			if (fieldMap[PBPos2Pos(fieldState.PusherBoxPositions).second] == 'X') { // Box on target
 				fieldState.reward = 100;
@@ -355,9 +365,10 @@ namespace RL {
 		return;
 	}
 
-	void RL_solve(RLField& field, float epsilon = .15f, float discount_factor = 1.0f, float alpha = 0.5f, size_t num_trajectories = 100) {
+	int RL_solve(RLField& field, float epsilon = .15f, float discount_factor = 1.0f, float alpha = 0.5f, size_t num_trajectories = 400) {
 		// Solves the box pusher problem using Q-learning
 		// Create data struct for Q
+		num_trajectories = field.size * field.size / 4;
 		std::unordered_map < ULL, std::vector<float>> Q;	// State-action value function
 		for (size_t i = 0; i < field.size; i++) {
 			for (size_t j = 0; j < field.size; j++) {
@@ -388,9 +399,9 @@ namespace RL {
 				std::cout << k << "," << field.fieldState.n << "\n";
 			}
 		}
-		policy.PrintQ();
+		//policy.PrintQ();
 		field.DrawSolution(policy);
-		return;
+		return field.fieldState.boxMoves;
 	}
 }
 
