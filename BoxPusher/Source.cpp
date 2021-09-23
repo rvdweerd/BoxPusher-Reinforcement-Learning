@@ -20,6 +20,7 @@ public:
 	int minPushBox(std::vector<std::vector<char>>& grid)
 	{
 		BFS::Maze maze(grid);
+		system("cls");
 		std::cout << "Demo of BFS solution... (press any key)";
 		std::cin.get();
 		
@@ -33,32 +34,39 @@ public:
 		maze.PrintPositionsOnMaze(maze.GetAccessibleNeighbors(maze.GetPBPos_0(),maze.GetPusherPos_0()));
 		std::cout << "(press any key)"; std::cin.get();
 
-		system("cls"); maze.PrintPBPosOnMaze(maze.GetPBPos_0());
+		system("cls"); 
+		std::cout << "Field and initial positions.\n\n";
+		maze.PrintPBPosOnMaze(maze.GetPBPos_0());
 		std::cout << "\nAll Reachable Pusher Positions ($):\n";
 		maze.PrintPositionsOnMaze(maze.GetReachablePushPositions( maze.GetPBPos_0() ));
 		std::cout << "(press any key)"; std::cin.get();
 
-		system("cls"); maze.PrintPBPosOnMaze(maze.GetPBPos_0());
+		system("cls"); 
+		std::cout << "Field and initial positions.\n\n";
+		maze.PrintPBPosOnMaze(maze.GetPBPos_0());
 		std::cout << "\nReachable Ball Push Positions ($): \n";
 		maze.PrintPositionsOnMaze(maze.GetReachableBallPushPositions(maze.GetPBPos_0() ));
 		std::cout << "(press any key)"; std::cin.get();
 
-		system("cls"); maze.PrintPBPosOnMaze(maze.GetPBPos_0());
+		system("cls"); 
+		std::cout << "Field and initial positions.\n\n";
+		maze.PrintPBPosOnMaze(maze.GetPBPos_0());
 		std::cout << "\nPossible new ball positions ($): \n";
 		maze.PrintPositionsOnMaze(maze.GetNewBallPositions(maze.GetPBPos_0() ));
 		std::cout << "(press any key)"; std::cin.get();
 
-		system("cls"); maze.PrintPBPosOnMaze(maze.GetPBPos_0());
+		system("cls"); 
+		std::cout << "Field and initial positions.\n\n";
+		maze.PrintPBPosOnMaze(maze.GetPBPos_0());
 		std::cout << "\nPossible new PBPositions ($):\n";
 		std::vector<BFS::ULL> vec = maze.GetNewPBPositions(maze.GetPBPos_0());
 		for (BFS::ULL pbpos : vec)
 		{
-			std::cout << "pusher:" << (pbpos >> 32) << ",ball:" << ((pbpos << 32) >> 32) << '\n';
-		}
-		for (BFS::ULL pbpos : vec)
-		{
+			std::cout << "\npusher:" << (pbpos >> 32) << ",ball:" << ((pbpos << 32) >> 32) << '\n';
 			maze.PrintPBPosOnMaze(pbpos);
 		}
+		std::cin.get();
+		system("cls");
 
 		std::cout << "Minimum number of box pushes to goal: ";
 		BFS::PBData endstate = maze.NumberOfPushesToGoal();
@@ -85,15 +93,17 @@ public:
 int main()
 {
 	auto grids = LoadGrids();
+	size_t demoModel = 2; // pick 0..6
+
+	// ############################################
+	// RL for one grid
+	// ############################################
+	Solution_RL().minPushBox(grids[demoModel]);
 
 	// ############################################
 	// BFS for one grid
 	// ############################################
 	//SearchAlgo(grids[4]);
-	Solution_BFS().minPushBox(grids[4]);
+	Solution_BFS().minPushBox(grids[demoModel]);
 
-	// ############################################
-	// RL for one grid
-	// ############################################
-	Solution_RL().minPushBox(grids[4]);
 }
