@@ -214,7 +214,7 @@ namespace RL {
 					if (pbPositions.first >= 2 * width && fieldMap[(pbPositions.first - 2 * width)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first - width, pbPositions.second - width });
 						fieldState.boxMoves++;
-						//fieldState.reward -= 5;
+						fieldState.reward -= 5;
 						//std::cout << "Pushed box North\n";
 					}
 					else { // no room to push
@@ -235,7 +235,7 @@ namespace RL {
 					if ((pbPositions.second + 1) % width > 0 && fieldMap[(pbPositions.first + 2)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first + 1, pbPositions.second + 1 });
 						fieldState.boxMoves++;
-						//fieldState.reward -= 5;
+						fieldState.reward -= 5;
 						//std::cout << "Pushed box East\n";
 					}
 					else { // no room to push
@@ -256,7 +256,7 @@ namespace RL {
 					if ((pbPositions.first / width) + 1 < height - 1 && fieldMap[(pbPositions.first + 2 * width)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first + width, pbPositions.second + width });
 						fieldState.boxMoves++;
-						//fieldState.reward -= 5;
+						fieldState.reward -= 5;
 						//std::cout << "Pushed box South\n";
 					}
 					else { // no room to push
@@ -277,7 +277,7 @@ namespace RL {
 					if ((pbPositions.first) % width > 1 && fieldMap[(pbPositions.first - 2)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first - 1, pbPositions.second - 1 });
 						fieldState.boxMoves++;
-						//fieldState.reward -= 5;
+						fieldState.reward -= 5;
 						//std::cout << "Pushed box West\n";
 					}
 					else { // no room to push
