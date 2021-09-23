@@ -31,5 +31,11 @@
     <ClInclude Include="RLutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BFSutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Worlds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

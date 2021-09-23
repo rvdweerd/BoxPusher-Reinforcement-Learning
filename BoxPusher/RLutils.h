@@ -214,7 +214,7 @@ namespace RL {
 					if (pbPositions.first >= 2 * width && fieldMap[(pbPositions.first - 2 * width)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first - width, pbPositions.second - width });
 						fieldState.boxMoves++;
-						fieldState.reward -= 5;
+						//fieldState.reward -= 5;
 						//std::cout << "Pushed box North\n";
 					}
 					else { // no room to push
@@ -235,7 +235,7 @@ namespace RL {
 					if ((pbPositions.second + 1) % width > 0 && fieldMap[(pbPositions.first + 2)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first + 1, pbPositions.second + 1 });
 						fieldState.boxMoves++;
-						fieldState.reward -= 5;
+						//fieldState.reward -= 5;
 						//std::cout << "Pushed box East\n";
 					}
 					else { // no room to push
@@ -256,7 +256,7 @@ namespace RL {
 					if ((pbPositions.first / width) + 1 < height - 1 && fieldMap[(pbPositions.first + 2 * width)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first + width, pbPositions.second + width });
 						fieldState.boxMoves++;
-						fieldState.reward -= 5;
+						//fieldState.reward -= 5;
 						//std::cout << "Pushed box South\n";
 					}
 					else { // no room to push
@@ -277,7 +277,7 @@ namespace RL {
 					if ((pbPositions.first) % width > 1 && fieldMap[(pbPositions.first - 2)] != '#') { // room to push
 						fieldState.PusherBoxPositions = Pos2PBPos({ pbPositions.first - 1, pbPositions.second - 1 });
 						fieldState.boxMoves++;
-						fieldState.reward -= 5;
+						//fieldState.reward -= 5;
 						//std::cout << "Pushed box West\n";
 					}
 					else { // no room to push
@@ -302,12 +302,50 @@ namespace RL {
 		void Reset() {
 			fieldState = fieldState_0;
 		}
+		void PlayManually() {
+			Reset();
+			cls(hStdOut);
+			std::cout << "Manual play\n";
+			std::cout << "===========\n";
+			std::cout << "Commands: (a,s,d,w) = (LEFT,DOWN, RIGHT, UP)\n";
+			std::cout << "          (q)       = (quit)\n";
+			std::cout << "X = Target position\n";
+			std::cout << "O = Box position\n";
+			std::cout << "p = Pusher position\n";
+			std::cout << ". = Accessible cell\n";
+			std::cout << "X = Wall\n\n";
+
+			while (!fieldState.done) {
+				SetConsoleCursorPosition(hStdOut, { 0,10 });
+				DrawField();
+				char input; std::cin >> input;
+				if (input == 'q') {
+					return;
+				}
+				if (input == 'w') {
+					Step(0);
+				}
+				if (input == 'd') {
+					Step(1);
+				}
+				if (input == 's') {
+					Step(2);
+				}
+				if (input == 'a') {
+					Step(3);
+				}
+			}
+			std::cout << "Target reached. Steps:" << fieldState.n;
+			Reset();
+			return;
+		}
 		void DrawSolution(EpsGreedyPolicy& policy) {
 			float eps_old = policy.GetEpsilon();
 			policy.SetEpsilon(0.f);
 			Reset();
 			cls(hStdOut);
-			std::cout << "Drawing solution using optimal policy learned using Q-learning\n\n";
+			std::cout << "Learned optimal policy using Q-learning\n";
+			std::cout << "=======================================\n";
 			std::cout << "X = Target position\n";
 			std::cout << "O = Box position\n";
 			std::cout << "p = Pusher position\n";
@@ -321,7 +359,7 @@ namespace RL {
 				Step(policy.Sample(fieldState.PusherBoxPositions));
 				DrawField();
 			} while (!fieldState.done);
-			std::cout << "\nTarget reached. Steps:" << fieldState.n;
+			std::cout << "\nTarget reached. Steps: " << fieldState.n <<", Box moves: " << fieldState.boxMoves;
 			std::cin.get();
 			policy.SetEpsilon(eps_old);
 		}
@@ -339,36 +377,10 @@ namespace RL {
 		DWORD                      cellCount;
 		COORD                      homeCoords = { 0, 0 };
 	};
-
-	void RL_test(RLField& field) {
-
-		while (!field.fieldState.done) {
-			field.DrawField();
-			char input; std::cin >> input;
-			if (input == 'q') {
-				return;
-			}
-			if (input == 'w') {
-				field.Step(0);
-			}
-			if (input == 'd') {
-				field.Step(1);
-			}
-			if (input == 's') {
-				field.Step(2);
-			}
-			if (input == 'a') {
-				field.Step(3);
-			}
-		}
-		std::cout << "Target reached. Steps:" << field.fieldState.n;
-		return;
-	}
-
 	int RL_solve(RLField& field, float epsilon = .15f, float discount_factor = 1.0f, float alpha = 0.5f, size_t num_trajectories = 400) {
 		// Solves the box pusher problem using Q-learning
 		// Create data struct for Q
-		num_trajectories = field.size * field.size / 4;
+		num_trajectories = field.size * field.size;
 		std::unordered_map < ULL, std::vector<float>> Q;	// State-action value function
 		for (size_t i = 0; i < field.size; i++) {
 			for (size_t j = 0; j < field.size; j++) {
