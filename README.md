@@ -3,7 +3,7 @@
 
 RL solution in "RLutils.h"
 * Simulated environment: RL::RLField
-* Policy class: RL::EpsGreedyPolilcy
+* Policy class: RL::EpsGreedyPolicy
 * Q-learning algo: RL::RL_solve
 
 BFS solution in "BFSutils.h"
