@@ -1,4 +1,4 @@
-# BoxPusher solved: Reinforcement Learning vs. BFS
+# BoxPusher (Sokoban) solved: Reinforcement Learning vs. BFS
 (Problem definition from LeetCode challenge 1263)
 
 RL solution in "RLutils.h"
